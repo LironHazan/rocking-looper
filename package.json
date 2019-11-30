@@ -1,0 +1,25 @@
+{
+  "name": "rocking-looper",
+  "version": "1.0.0",
+  "description": "ts is powerful ",
+  "main": "index.ts",
+  "scripts": {
+    "start:di": "ts-node -O '{\"module\": \"commonjs\"}' ./dependency-injection/example/di-bootstrap.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "typescript",
+    "design",
+    "patterns"
+  ],
+  "author": "Liron Hazan",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^8.5.4"
+  }
+}
