@@ -2,7 +2,7 @@ export class AudioCtrl {
     audioCtx: AudioContext;
 
     constructor() {
-        this.audioCtx = new window.AudioContext();
+        this.audioCtx = new AudioContext();
     }
 
     playSweep(wave: PeriodicWave) {

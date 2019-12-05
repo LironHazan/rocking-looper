@@ -4,7 +4,6 @@
   "description": "ts is powerful ",
   "main": "index.ts",
   "scripts": {
-    "start:di": "ts-node -O '{\"module\": \"commonjs\"}' ./dependency-injection/example/di-bootstrap.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
