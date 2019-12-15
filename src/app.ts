@@ -1,15 +1,15 @@
-import {AudioCtrl} from "./audio/audio.ctrl";
+import {AudioComponent} from "./audio/audio.component";
 
 class App {
-    static run(audioInstance: AudioCtrl) {
+    static run(audioInstance: AudioComponent) {
         console.log(audioInstance);
-        audioInstance.playSweep({});
+        audioInstance.run();
     }
 }
 
 const main = async() => {
-    const { AudioCtrl } = await import('./audio/audio.ctrl.js');
-    const audioInstance = new AudioCtrl();
+    const { AudioComponent } = await import('./audio/audio.component.js');
+    const audioInstance = new AudioComponent();
         App.run(audioInstance);
 
 };
