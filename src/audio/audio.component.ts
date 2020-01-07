@@ -1,4 +1,4 @@
-import {AudioCmdService} from "./audio-cmd.service";
+import {AudioCmdService} from './audio-cmd.service';
 
 export class AudioComponent {
     audioCtx: AudioContext;
@@ -12,16 +12,35 @@ export class AudioComponent {
     // - Connect a filter before connecting destination ?
     // - Maintain a layer of web workers as the looper channels?
 
-    run() {
+    async run() {
         const ctx = AudioCmdService.createContextRef();
         // AudioCmdService.mediaStreamRef(ctx, );
 
-        const osc = this.audioCtx.createOscillator();
-        osc.type = 'square';
-       // osc.setPeriodicWave(wave);
-        osc.frequency.value = 440;
-        osc.connect(this.audioCtx.destination);
-        osc.start();
-        osc.stop(this.audioCtx.currentTime + 1);
+        // request user input with getUserMedia - todo: should be done outside as part of a recording act
+
+        const context = new AudioContext();
+
+        if (context.state === 'suspended') {
+            await context.resume();
+        }
+
+        const stream = await navigator.mediaDevices
+            .getUserMedia({
+                audio: {
+                    echoCancellation: false,
+                    autoGainControl: false,
+                    noiseSuppression: false,
+                    latency: 0
+                }
+            });
+        const lineInSource = context.createMediaStreamSource(stream);
+
+        lineInSource.connect(context.destination);
+
+        // Getting permission status.
+        const micStatus = await navigator.permissions.query({name: 'microphone'});
+
+        console.log(micStatus); // state: "prompt"
+
     }
 }

@@ -5,6 +5,6 @@ export class AudioCmdService {
     }
 
     static mediaStreamRef(ctx: AudioContext, mediaStream: MediaStream): MediaStreamAudioSourceNode {
-        return ctx.createMediaStreamSource(mediaStream)
+        return ctx.createMediaStreamSource(mediaStream);
     }
 }

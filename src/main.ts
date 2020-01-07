@@ -1,6 +1,6 @@
-import {AudioComponent} from "./audio/audio.component";
+import {AudioComponent} from './audio/audio.component';
 
-class App {
+class Main {
     static run(audioInstance: AudioComponent) {
         console.log(audioInstance);
         audioInstance.run();
@@ -8,9 +8,9 @@ class App {
 }
 
 const main = async() => {
-    const { AudioComponent } = await import('./audio/audio.component.js');
+    const { AudioComponent } = await import('./audio/audio.component');
     const audioInstance = new AudioComponent();
-        App.run(audioInstance);
+        Main.run(audioInstance);
 
 };
 
