@@ -1,8 +1,8 @@
 {
-  "name": "webpack-typescript-starter",
-  "version": "0.0.1",
-  "description": "A simple Webpack 4 starter with TypeScript transpilation",
-  "main": "index.js",
+  "name": "rocking-looper",
+  "version": "1.0.0",
+  "description": "ts is powerful ",
+  "main": "index.ts",
   "scripts": {
     "start": "webpack-dev-server --port 8080 --inline --progress --profile --colors --watch --content-base src/ --mode development",
     "build": "webpack --config webpack.config.js --mode production",
@@ -18,8 +18,8 @@
     "webpack4",
     "typescript"
   ],
-  "author": "Juri Strumpflohner",
-  "license": "ISC",
+  "author": "Liron Hazan",
+  "license": "MIT",
   "devDependencies": {
     "@types/jasmine": "2.8.7",
     "@types/node": "7.0.0",
