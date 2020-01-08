@@ -2,6 +2,7 @@ import {AudioCmdService} from './audio-cmd.service';
 
 export class AudioComponent {
     audioCtx: AudioContext;
+    lineInSource: any;
 
     constructor() {
         this.audioCtx = AudioCmdService.createContextRef();
@@ -18,24 +19,25 @@ export class AudioComponent {
 
         // request user input with getUserMedia - todo: should be done outside as part of a recording act
 
-        const context = new AudioContext();
+        const context = new AudioContext({ latencyHint: 'interactive' });
 
         if (context.state === 'suspended') {
             await context.resume();
         }
 
-        const stream = await navigator.mediaDevices
-            .getUserMedia({
-                audio: {
-                    echoCancellation: false,
-                    autoGainControl: false,
-                    noiseSuppression: false,
-                    latency: 0
-                }
-            });
-        const lineInSource = context.createMediaStreamSource(stream);
-
-        lineInSource.connect(context.destination);
+        if (!this.lineInSource) {
+            const mediaStream = await navigator.mediaDevices
+                .getUserMedia({
+                    audio: {
+                        echoCancellation: false,
+                        autoGainControl: false,
+                        noiseSuppression: false,
+                        latency: 0
+                    }
+                });
+            this.lineInSource = context.createMediaStreamSource(mediaStream);
+            this.lineInSource.connect(context.destination);
+        }
 
         // Getting permission status.
         const micStatus = await navigator.permissions.query({name: 'microphone'});
