@@ -4,7 +4,7 @@ export class Recorder {
 
     recorder: MediaRecorder;
 
-    constructor(streamDestination: any) {
+    constructor(streamDestination: MediaStream) {
        this.recorder = new MediaRecorder(streamDestination);
     }
 
