@@ -27,7 +27,7 @@ export class LooperUserInteractionLayer {
         });
 
         LooperUserInteractionLayer.initClickHandlers([stopRecBtn1, stopRecBtn2, stopRecBtn3], () =>  {
-            recorderInstance.startRecording()
+            recorderInstance.stopRecording()
         });
 
         LooperUserInteractionLayer.initClickHandlers([loopAll], () =>  {

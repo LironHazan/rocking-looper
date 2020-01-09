@@ -13,12 +13,10 @@ const main = async() => {
     // Getting permission status.
     await navigator.permissions.query({name: 'microphone'});
 
-    const { AudioComponent } = await import('./audio/audio.component');
     const audioInstance = new AudioComponent();
-    const stream = audioInstance.run();
+    const stream = await audioInstance.run();
 
     if (!Main.recorderInstance) {
-        // todo: resolve type
         Main.recorderInstance = new Recorder(stream);
     }
     // View Layer CTRL

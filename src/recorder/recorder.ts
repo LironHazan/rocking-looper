@@ -7,11 +7,11 @@ export class Recorder {
     }
 
     startRecording() {
-        // ?? this.recorder.start()
+        this.recorder.start()
     }
 
-    clearRecording() {
-        // ?? this.recorder.clear()
+    stopRecording() {
+        this.recorder.stop()
     }
 
 }
