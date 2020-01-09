@@ -1,5 +1,3 @@
-const WORKER_PATH = './worker.ts';
-
 export class Recorder {
 
     recorder: MediaRecorder;
