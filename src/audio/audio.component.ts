@@ -14,7 +14,7 @@ export class AudioComponent {
         this.audioCtx = new AudioContext({ latencyHint: 'interactive' });
 
         if (this.audioCtx.state === 'suspended') {
-            await this.audioCtx.resume();
+            this.audioCtx.resume();
         }
 
         if (!this.lineInSource) {

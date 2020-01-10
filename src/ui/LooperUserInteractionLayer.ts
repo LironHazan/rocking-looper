@@ -23,11 +23,11 @@ export class LooperUserInteractionLayer {
         const stopRecBtn3: Element = document.querySelector('#s3');
 
         LooperUserInteractionLayer.initClickHandlers([recBtn1, recBtn2, recBtn3], () =>  {
-            recorderInstance.startRecording()
+            recorderInstance.startRecording();
         });
 
         LooperUserInteractionLayer.initClickHandlers([stopRecBtn1, stopRecBtn2, stopRecBtn3], () =>  {
-            recorderInstance.stopRecording()
+            recorderInstance.stopRecording();
         });
 
         // be able to play all recordings

@@ -32,7 +32,7 @@ const main = async() => {
     playerWorker.onmessage =  (e) => {
         console.log('Message received from worker');
         console.log(e);
-    }
+    };
 
 };
 
