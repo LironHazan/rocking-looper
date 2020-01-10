@@ -1,4 +1,4 @@
-import {Recorder} from "../recorder/recorder";
+import {Recorder} from '../recorder/recorder';
 
 export class LooperUserInteractionLayer {
 
@@ -6,11 +6,11 @@ export class LooperUserInteractionLayer {
         for ( const el of elements) {
             el.addEventListener('click', () => {
                 cb();
-            })
+            });
         }
     }
 
-    static setupLooperUserInteractions(recorderInstance: Recorder) {
+    static setupLooperUserInteractions<T>(recorderInstance: Recorder, stream: T[], worker: Worker) {
         const loopAll: Element = document.querySelector('#loop');
         const stopLooping: Element = document.querySelector('#stop-looping');
 
@@ -30,11 +30,19 @@ export class LooperUserInteractionLayer {
             recorderInstance.stopRecording()
         });
 
+        // be able to play all recordings
         LooperUserInteractionLayer.initClickHandlers([loopAll], () =>  {
-            // invoke worker player
+
+            // Passing blobs to the worker player
+            for (const blob of stream) {
+                worker.postMessage(stream);
+            }
+            console.log(stream);
+
         });
+
         LooperUserInteractionLayer.initClickHandlers([stopLooping], () =>  {
-            // invoke worker player
+            // cleanups
         });
     }
 

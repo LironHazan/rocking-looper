@@ -10,7 +10,7 @@ export class AudioComponent {
     // - Connect a filter before connecting destination ?
     // - Maintain a layer of web workers as the looper channels?
 
-    async run(): Promise<MediaStream> {
+    async getlineInSource(): Promise<MediaStream> {
         this.audioCtx = new AudioContext({ latencyHint: 'interactive' });
 
         if (this.audioCtx.state === 'suspended') {
