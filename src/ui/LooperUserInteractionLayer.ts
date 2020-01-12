@@ -35,7 +35,7 @@ export class LooperUserInteractionLayer {
 
             // Passing blobs to the worker player
             for (const blob of stream) {
-                worker.postMessage(stream);
+                worker.postMessage(blob);
             }
             console.log(stream);
 

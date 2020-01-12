@@ -7,11 +7,15 @@ export class Recorder {
     }
 
     startRecording() {
-        this.recorder.start();
+        if (this.recorder.state === 'inactive') {
+            this.recorder.start();
+        }
     }
 
     stopRecording() {
-        this.recorder.stop();
+        if (this.recorder.state === 'recording') {
+            this.recorder.stop();
+        }
     }
 
 }
