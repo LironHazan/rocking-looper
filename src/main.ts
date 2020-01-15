@@ -7,6 +7,14 @@
 // any action but start --> double click
 // start
 
+enum State {
+    start = 'start',
+    rec = 'rec',
+    play = 'play',
+    stop = 'stop',
+}
+
+let btnState: State = State.start;
 
 const addTrack = function(blob: Blob) {
     // Init Selectors
@@ -24,6 +32,7 @@ const addTrack = function(blob: Blob) {
         const playable = new Audio(src);
         playable.loop =  true;
         playable.play();
+        btnState = State.play;
     };
 };
 
@@ -71,7 +80,28 @@ const main = async() => {
             'type' : 'audio/ogg; codecs=opus',
         });
         chunks = [];
-        addTrack(blob);
+
+        // todo: a generic fn to init all actions
+        const first: HTMLButtonElement = document.querySelector('.first');
+        const second: HTMLButtonElement = document.querySelector('.second');
+        const third: HTMLButtonElement = document.querySelector('.third');
+
+
+        first.onclick = () => {
+            // switch case
+            // play
+            if (btnState === State.rec) {
+                const src = URL.createObjectURL(blob);
+                const playable = new Audio(src);
+                playable.loop =  true;
+                playable.play();
+                btnState = State.play;
+            }
+            else if (btnState === State.play) {
+
+            }
+
+        };
     };
 };
 
