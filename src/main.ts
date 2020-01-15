@@ -14,85 +14,112 @@ enum State {
     stop = 'stop',
 }
 
-let btnState: State = State.start;
-let blob: Blob;
-let stream;
-let mediaRecorder: MediaRecorder;
+class LooperComponent {
+    btnState: State = State.start;
+    blob: Blob;
+    stream: MediaStream;
+    mediaRecorder: MediaRecorder;
 
-const handleTrack = function() {
-    // switch case
+    constructor() {
+        // buttons
+        const first: HTMLButtonElement = document.querySelector('.first');
+        const second: HTMLButtonElement = document.querySelector('.second');
+        const third: HTMLButtonElement = document.querySelector('.third');
 
-    if (btnState === State.start) {
-
-        mediaRecorder.start();
+        this.attachClickListeners([first, second, third]);
     }
 
-    if (btnState === State.rec) {
+    setupTrackState() {
+        let playable: HTMLAudioElement;
 
-        mediaRecorder.stop();
+        // replace with switch case
+        if (this.btnState === State.start) {
+            this.mediaRecorder.start();
+            return;
+        }
 
-        const src = URL.createObjectURL(blob);
-        const playable = new Audio(src);
-        playable.loop =  true;
-        playable.play();
-        btnState = State.play;
+        if (this.btnState === State.rec) {
+            this.mediaRecorder.stop();
+            const src = URL.createObjectURL(this.blob);
+            playable = new Audio(src);
+            playable.loop =  true;
+            playable.play();
+            this.btnState = State.play;
+            return;
+        }
+
+        if (this.btnState === State.play) {
+            playable.pause();
+            return;
+
+        }
+
+        if (this.btnState === State.stop) {
+            playable.play();
+            return;
+        }
+    };
+
+    attachClickListeners(elements: HTMLButtonElement[]) {
+        for (const el of elements) {
+            el.onclick = () => {
+                this.setupTrackState();
+            };
+        }
+    };
+
+    async start () {
+        // Getting permission status.
+        await navigator.permissions.query({name: 'microphone'});
+
+        // Streaming audio:
+        await this.setupAudioLine();
+
+        // Recording streamed audio!
+        await this.setupRecorder();
     }
-    else if (btnState === State.play) {
 
+    private async setupAudioLine() {
+        const context = new AudioContext();
+        if (context.state === 'suspended') {
+            await context.resume();
+        }
+
+        this.stream = await navigator.mediaDevices
+            .getUserMedia({
+                audio: {
+                    echoCancellation: false,
+                    autoGainControl: false,
+                    noiseSuppression: false,
+                    latency: 0
+                }
+            });
+
+        const lineInSource = context.createMediaStreamSource(this.stream);
+        lineInSource.connect(context.destination);
     }
-};
 
-const attachClickListeners = (elements: HTMLButtonElement[]) => {
-    for (const el of elements) {
-        el.onclick = () => {
-            handleTrack();
+    private async setupRecorder() {
+        this.mediaRecorder = new MediaRecorder(this.stream);
+        let chunks: Blob[] = [];
+
+        this.mediaRecorder.ondataavailable = (event: BlobEvent) => {
+            chunks.push(event.data);
+        };
+
+        this.mediaRecorder.onstop = () => {
+            this.blob = new Blob(chunks, {
+                'type' : 'audio/ogg; codecs=opus',
+            });
+            // Reset chunks
+            chunks = [];
         };
     }
-};
+}
 
 const main = async() => {
-
-    const first: HTMLButtonElement = document.querySelector('.first');
-    const second: HTMLButtonElement = document.querySelector('.second');
-    const third: HTMLButtonElement = document.querySelector('.third');
-
-    // Getting permission status.
-   await navigator.permissions.query({name: 'microphone'});
-
-    // Streaming audio:
-    const context = new AudioContext();
-    if (context.state === 'suspended') {
-        await context.resume();
-    }
-
-    stream = await navigator.mediaDevices
-        .getUserMedia({
-            audio: {
-                echoCancellation: false,
-                autoGainControl: false,
-                noiseSuppression: false,
-                latency: 0
-            }
-        });
-    const lineInSource = context.createMediaStreamSource(stream);
-    lineInSource.connect(context.destination);
-
-    // Recording streamed audio!
-    mediaRecorder = new MediaRecorder(stream);
-    let chunks: any[] = [];
-
-    mediaRecorder.ondataavailable = <T extends { data: any }>(event: T) => {
-        chunks.push(event.data);
-    };
-
-    attachClickListeners([first, second, third]);
-
-    mediaRecorder.onstop = (event) => {
-        blob = new Blob(chunks, {
-            'type' : 'audio/ogg; codecs=opus',
-        });
-        chunks = [];
-    };
+    const looper = new LooperComponent();
+    await looper.start();
 };
 
 main()
