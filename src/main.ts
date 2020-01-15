@@ -32,31 +32,25 @@ class LooperComponent {
     setupTrackState() {
         let playable: HTMLAudioElement;
 
-        // replace with switch case
-        if (this.btnState === State.start) {
-            this.mediaRecorder.start();
-            return;
-        }
-
-        if (this.btnState === State.rec) {
-            this.mediaRecorder.stop();
-            const src = URL.createObjectURL(this.blob);
-            playable = new Audio(src);
-            playable.loop =  true;
-            playable.play();
-            this.btnState = State.play;
-            return;
-        }
-
-        if (this.btnState === State.play) {
-            playable.pause();
-            return;
-
-        }
-
-        if (this.btnState === State.stop) {
-            playable.play();
-            return;
+        switch(this.btnState) {
+            case State.start:
+                this.mediaRecorder.start();
+                break;
+            case State.rec:
+                this.mediaRecorder.stop();
+                const src = URL.createObjectURL(this.blob);
+                playable = new Audio(src);
+                playable.loop =  true;
+                playable.play();
+                this.btnState = State.play;
+                break;
+            case State.play:
+                playable.pause();
+                break;
+            case State.stop:
+                playable.play();
+                break;
+            default:
         }
     };
 
