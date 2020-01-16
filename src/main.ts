@@ -15,7 +15,7 @@ enum State {
 }
 
 class LooperComponent {
-    btnState: State = State.start;
+    btnState: State = State.start; // todo: or move to web component or maintain state for each btn
     blob: Blob;
     stream: MediaStream;
     mediaRecorder: MediaRecorder;
@@ -31,25 +31,42 @@ class LooperComponent {
 
     setupTrackState() {
         let playable: HTMLAudioElement;
+        let text = 'start';
 
         switch(this.btnState) {
             case State.start:
+                this.btnState = State.rec;
+                text = State.rec;
+                console.log(text);
                 this.mediaRecorder.start();
                 break;
+
             case State.rec:
+                this.btnState = State.play;
+                text = State.play;
+                console.log(text);
+
                 this.mediaRecorder.stop();
                 const src = URL.createObjectURL(this.blob);
                 playable = new Audio(src);
                 playable.loop =  true;
                 playable.play();
-                this.btnState = State.play;
                 break;
+
             case State.play:
+                this.btnState = State.stop;
+                text = State.stop;
+                console.log(text);
                 playable.pause();
                 break;
+
             case State.stop:
+                this.btnState = State.play;
+                text = State.play;
+                console.log(text);
                 playable.play();
                 break;
+
             default:
         }
     };
