@@ -14,7 +14,7 @@ enum State {
     stop = 'stop',
 }
 
-interface LooperActionRef { el: HTMLElement, btnState: State }
+interface LooperActionRef { el: HTMLElement, btnState: State, playable: HTMLAudioElement }
 
 class LooperComponent {
     blob: Blob;
@@ -28,14 +28,12 @@ class LooperComponent {
         const third: HTMLElement = document.querySelector('.third');
 
         this.attachClickListeners(
-            [{ el: first, btnState: State.start },
-                { el: second, btnState: State.start },
-                { el: third, btnState: State.start }]);
+            [{ el: first, btnState: State.start, playable: null },
+                { el: second, btnState: State.start, playable: null  },
+                { el: third, btnState: State.start, playable: null  }]);
     }
 
     setupTrackState(element: LooperActionRef) {
-        let playable: HTMLAudioElement;
-
         switch(element.btnState) {
             case State.start:
                 element.btnState = State.rec;
@@ -43,7 +41,7 @@ class LooperComponent {
                 element.el.classList.add('rec');
 
                 // User clicked START so start recording input stream
-                this.mediaRecorder.start();
+                this.mediaRecorder && this.mediaRecorder.start();
                 break;
 
             case State.rec:
@@ -54,11 +52,13 @@ class LooperComponent {
 
                 // Stop recording and start playing the track in loop
 
-                this.mediaRecorder.stop();
+                this.mediaRecorder && this.mediaRecorder.stop();
                 const src = URL.createObjectURL(this.blob);
-                playable = new Audio(src);
-                playable.loop =  true;
-                playable.play();
+                const playable = new Audio(src);
+                // store reference of the track
+                element.playable = playable;
+                element.playable.loop =  true;
+                element.playable.play();
                 break;
 
             case State.play:
@@ -68,7 +68,7 @@ class LooperComponent {
                 element.el.classList.remove(State.play);
 
                 // Stop playing
-                playable && playable.pause();
+                element.playable && element.playable.pause();
                 break;
 
             case State.stop:
@@ -78,7 +78,7 @@ class LooperComponent {
                 element.el.classList.remove(State.stop);
 
                 // Play again
-                playable && playable.play();
+                element.playable && element.playable.play();
                 break;
 
             default:
