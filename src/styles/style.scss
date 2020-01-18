@@ -2,25 +2,55 @@ body {
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: center;
-}
+  justify-content: center; }
 
 .looper {
   margin-top: 20px;
+  width: 100%;
+}
+
+.looper .looper-channels {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .looper .action-btn-wrapper {
-  height: 100px;
-  width: 100px;
+  height: 70px;
+  width: 70px;
   background-color: black;
   border-radius: 50%;
   padding: 2px;
+  margin-left: 15px;
 }
 
 .looper .action-btn {
-  width: 100px;
-  height: 100px;
-  color: white;
+  height: 70px;
+  width: 70px;
+  background-color: white;
   border-radius: 50%;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+}
+.looper .action-btn .state-text {
+  color: black;
+  margin-top: 35%;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-family: "Courier New";
 }
 
+.rec {
+  background: tomato !important;
+}
+
+.play {
+  background: limegreen !important;
+}
+
+.stop {
+  background: cornflowerblue !important;
+}
+/*# sourceMappingURL=style.css.map */

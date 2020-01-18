@@ -41,4 +41,16 @@ body {
   text-transform: uppercase;
   font-family: "Courier New";
 }
+
+.rec {
+ background: tomato !important;
+}
+
+.play {
+  background: limegreen !important;
+}
+
+.stop {
+  background: cornflowerblue !important;
+}
 /*# sourceMappingURL=style.css.map */

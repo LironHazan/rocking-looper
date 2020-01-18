@@ -14,37 +14,45 @@ enum State {
     stop = 'stop',
 }
 
+interface LooperActionRef { el: HTMLElement, btnState: State }
+
 class LooperComponent {
-    btnState: State = State.start; // todo: or move to web component or maintain state for each btn
     blob: Blob;
     stream: MediaStream;
     mediaRecorder: MediaRecorder;
 
     constructor() {
         // buttons
-        const first: HTMLButtonElement = document.querySelector('.first');
-        const second: HTMLButtonElement = document.querySelector('.second');
-        const third: HTMLButtonElement = document.querySelector('.third');
+        const first: HTMLElement = document.querySelector('.first');
+        const second: HTMLElement = document.querySelector('.second');
+        const third: HTMLElement = document.querySelector('.third');
 
-        this.attachClickListeners([first, second, third]);
+        this.attachClickListeners(
+            [{ el: first, btnState: State.start },
+                { el: second, btnState: State.start },
+                { el: third, btnState: State.start }]);
     }
 
-    setupTrackState() {
+    setupTrackState(element: LooperActionRef) {
         let playable: HTMLAudioElement;
-        let text = 'start';
 
-        switch(this.btnState) {
+        switch(element.btnState) {
             case State.start:
-                this.btnState = State.rec;
-                text = State.rec;
-                console.log(text);
+                element.btnState = State.rec;
+                element.el.children[0].textContent = element.btnState;
+                element.el.classList.add('rec');
+
+                // User clicked START so start recording input stream
                 this.mediaRecorder.start();
                 break;
 
             case State.rec:
-                this.btnState = State.play;
-                text = State.play;
-                console.log(text);
+                element.btnState = State.play;
+                element.el.children[0].textContent = element.btnState;
+                element.el.classList.remove(State.rec);
+                element.el.classList.add(State.play);
+
+                // Stop recording and start playing the track in loop
 
                 this.mediaRecorder.stop();
                 const src = URL.createObjectURL(this.blob);
@@ -54,27 +62,44 @@ class LooperComponent {
                 break;
 
             case State.play:
-                this.btnState = State.stop;
-                text = State.stop;
-                console.log(text);
-                playable.pause();
+                element.btnState = State.stop;
+                element.el.children[0].textContent = element.btnState;
+                element.el.classList.add(State.stop);
+                element.el.classList.remove(State.play);
+
+                // Stop playing
+                playable && playable.pause();
                 break;
 
             case State.stop:
-                this.btnState = State.play;
-                text = State.play;
-                console.log(text);
-                playable.play();
+                element.btnState = State.play;
+                element.el.children[0].textContent = element.btnState;
+                element.el.classList.add(State.play);
+                element.el.classList.remove(State.stop);
+
+                // Play again
+                playable && playable.play();
                 break;
 
             default:
         }
     };
 
-    attachClickListeners(elements: HTMLButtonElement[]) {
-        for (const el of elements) {
-            el.onclick = () => {
-                this.setupTrackState();
+    reset(element: LooperActionRef) {
+        element.btnState = State.start;
+        element.el.children[0].textContent = element.btnState;
+        element.el.classList.remove(State.stop);
+        element.el.classList.remove(State.rec);
+        element.el.classList.remove(State.play);
+    }
+
+    attachClickListeners(elements: LooperActionRef[]) {
+        for (const element of elements) {
+            element.el.onclick = () => {
+                this.setupTrackState(element);
+            };
+            element.el.ondblclick = () => {
+                this.reset(element);
             };
         }
     };
