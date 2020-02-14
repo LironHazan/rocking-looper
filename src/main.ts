@@ -1,12 +1,3 @@
-// state machine:
-// start --> click | white
-// rec --> click | red
-// play --> click | green
-// stop --> click | blue
-// play
-// any action but start --> double click
-// start
-
 enum State {
     start = 'start',
     rec = 'rec',
@@ -14,26 +5,49 @@ enum State {
     stop = 'stop',
 }
 
-interface LooperActionRef { el: HTMLElement, btnState: State, playable: HTMLAudioElement }
+interface LooperActionRef { id: number, el: HTMLElement, btnState: State, playable: HTMLAudioElement, blob: Blob }
 
 class LooperComponent {
-    blob: Blob;
+    static pressedElement: LooperActionRef;
+    static elements: LooperActionRef[];
     stream: MediaStream;
     mediaRecorder: MediaRecorder;
 
     constructor() {
-        // buttons
+        // looper buttons
         const first: HTMLElement = document.querySelector('.first');
         const second: HTMLElement = document.querySelector('.second');
         const third: HTMLElement = document.querySelector('.third');
 
-        this.attachClickListeners(
-            [{ el: first, btnState: State.start, playable: null },
-                { el: second, btnState: State.start, playable: null  },
-                { el: third, btnState: State.start, playable: null  }]);
+        LooperComponent.elements = [
+            { id: 1, el: first, btnState: State.start, playable: null, blob: null },
+            { id: 2, el: second, btnState: State.start, playable: null, blob: null  },
+            { id: 3, el: third, btnState: State.start, playable: null, blob: null  }
+            ];
+
+        this.attachClickListeners(LooperComponent.elements);
     }
 
-    setupTrackState(element: LooperActionRef) {
+    static reset(element: LooperActionRef) {
+        element.btnState = State.start;
+        element.el.children[0].textContent = element.btnState;
+        element.el.classList.remove(State.stop);
+        element.el.classList.remove(State.rec);
+        element.el.classList.remove(State.play);
+    }
+
+    private attachClickListeners(elements: LooperActionRef[]) {
+        for (const element of elements) {
+            element.el.onclick = () => {
+                this.setupTrackState(element);
+            };
+            element.el.ondblclick = () => {
+                LooperComponent.reset(element);
+            };
+        }
+    };
+
+    private setupTrackState(element: LooperActionRef) {
         switch(element.btnState) {
             case State.start:
                 element.btnState = State.rec;
@@ -41,6 +55,7 @@ class LooperComponent {
                 element.el.classList.add('rec');
 
                 // User clicked START so start recording input stream
+                LooperComponent.pressedElement = element;
                 this.mediaRecorder && this.mediaRecorder.start();
                 break;
 
@@ -50,15 +65,10 @@ class LooperComponent {
                 element.el.classList.remove(State.rec);
                 element.el.classList.add(State.play);
 
-                // Stop recording and start playing the track in loop
-
+                // Stop recording
+                LooperComponent.pressedElement = element;
                 this.mediaRecorder && this.mediaRecorder.stop();
-                const src = URL.createObjectURL(this.blob);
-                const playable = new Audio(src);
-                // store reference of the track
-                element.playable = playable;
-                element.playable.loop =  true;
-                element.playable.play();
+
                 break;
 
             case State.play:
@@ -85,25 +95,6 @@ class LooperComponent {
         }
     };
 
-    reset(element: LooperActionRef) {
-        element.btnState = State.start;
-        element.el.children[0].textContent = element.btnState;
-        element.el.classList.remove(State.stop);
-        element.el.classList.remove(State.rec);
-        element.el.classList.remove(State.play);
-    }
-
-    attachClickListeners(elements: LooperActionRef[]) {
-        for (const element of elements) {
-            element.el.onclick = () => {
-                this.setupTrackState(element);
-            };
-            element.el.ondblclick = () => {
-                this.reset(element);
-            };
-        }
-    };
-
     async start () {
         // Getting permission status.
         await navigator.permissions.query({name: 'microphone'});
@@ -117,6 +108,7 @@ class LooperComponent {
 
     private async setupAudioLine() {
         const context = new AudioContext();
+
         if (context.state === 'suspended') {
             await context.resume();
         }
@@ -144,11 +136,22 @@ class LooperComponent {
         };
 
         this.mediaRecorder.onstop = () => {
-            this.blob = new Blob(chunks, {
-                'type' : 'audio/ogg; codecs=opus',
-            });
-            // Reset chunks
-            chunks = [];
+            for (const btn of LooperComponent.elements) {
+                if (LooperComponent.pressedElement.id === btn.id) {
+                    btn.blob = new Blob(chunks, {
+                        'type' : 'audio/ogg; codecs=opus',
+                    });
+                    // Reset chunks
+                    chunks = [];
+
+                    const src = btn.blob &&  URL.createObjectURL(btn.blob);
+                    if (!src) return;
+                    btn.playable = new Audio(src);
+                    btn.playable.loop =  true;
+                    btn.playable.play();
+                }
+            }
+
         };
     }
 }
