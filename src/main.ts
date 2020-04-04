@@ -1,99 +1,24 @@
-enum State {
-    start = 'start',
-    rec = 'rec',
-    play = 'play',
-    stop = 'stop',
-}
-
-interface LooperActionRef { id: number, el: HTMLElement, btnState: State, playable: HTMLAudioElement, blob: Blob }
+import {LooperActionRef, LooperViewLayer} from "./looper-view";
 
 class LooperComponent {
-    static pressedElement: LooperActionRef;
-    static elements: LooperActionRef[];
+
     stream: MediaStream;
     mediaRecorder: MediaRecorder;
 
     constructor() {
-        // looper buttons
-        const first: HTMLElement = document.querySelector('.first');
-        const second: HTMLElement = document.querySelector('.second');
-        const third: HTMLElement = document.querySelector('.third');
+        // Subscribe to view interactions
+        LooperViewLayer.viewInteractionSubject
+            .on({name: 'startRecording', fn: () => this.mediaRecorder && this.mediaRecorder.start()});
 
-        LooperComponent.elements = [
-            { id: 1, el: first, btnState: State.start, playable: null, blob: null },
-            { id: 2, el: second, btnState: State.start, playable: null, blob: null  },
-            { id: 3, el: third, btnState: State.start, playable: null, blob: null  }
-            ];
+        LooperViewLayer.viewInteractionSubject
+            .on({name: 'stopRecording', fn: () => this.mediaRecorder && this.mediaRecorder.stop()});
 
-        this.attachClickListeners(LooperComponent.elements);
+        LooperViewLayer.viewInteractionSubject
+            .on({name: 'pausePlaying', fn: (element: LooperActionRef) => element.playable && element.playable.pause()});
+
+        LooperViewLayer.viewInteractionSubject
+            .on({name: 'resumePlaying', fn: (element: LooperActionRef) => element.playable && element.playable.play()});
     }
-
-    static reset(element: LooperActionRef) {
-        element.btnState = State.start;
-        element.el.children[0].textContent = element.btnState;
-        element.el.classList.remove(State.stop);
-        element.el.classList.remove(State.rec);
-        element.el.classList.remove(State.play);
-    }
-
-    private attachClickListeners(elements: LooperActionRef[]) {
-        for (const element of elements) {
-            element.el.onclick = () => {
-                this.setupTrackState(element);
-            };
-            element.el.ondblclick = () => {
-                LooperComponent.reset(element);
-            };
-        }
-    };
-
-    private setupTrackState(element: LooperActionRef) {
-        switch(element.btnState) {
-            case State.start:
-                element.btnState = State.rec;
-                element.el.children[0].textContent = element.btnState;
-                element.el.classList.add('rec');
-
-                // User clicked START so start recording input stream
-                LooperComponent.pressedElement = element;
-                this.mediaRecorder && this.mediaRecorder.start();
-                break;
-
-            case State.rec:
-                element.btnState = State.play;
-                element.el.children[0].textContent = element.btnState;
-                element.el.classList.remove(State.rec);
-                element.el.classList.add(State.play);
-
-                // Stop recording
-                LooperComponent.pressedElement = element;
-                this.mediaRecorder && this.mediaRecorder.stop();
-
-                break;
-
-            case State.play:
-                element.btnState = State.stop;
-                element.el.children[0].textContent = element.btnState;
-                element.el.classList.add(State.stop);
-                element.el.classList.remove(State.play);
-
-                // Stop playing
-                element.playable && element.playable.pause();
-                break;
-
-            case State.stop:
-                element.btnState = State.play;
-                element.el.children[0].textContent = element.btnState;
-                element.el.classList.add(State.play);
-                element.el.classList.remove(State.stop);
-
-                // Play again
-                element.playable && element.playable.play();
-                break;
-
-            default:
-        }
-    };
 
     async start () {
         // Getting permission status.
@@ -136,8 +61,8 @@ class LooperComponent {
         };
 
         this.mediaRecorder.onstop = () => {
-            for (const btn of LooperComponent.elements) {
-                if (LooperComponent.pressedElement.id === btn.id) {
+            for (const btn of LooperViewLayer.elements) {
+                if (LooperViewLayer.lastPressedBtnId === btn.id) {
                     btn.blob = new Blob(chunks, {
                         'type' : 'audio/ogg; codecs=opus',
                     });
@@ -157,6 +82,8 @@ class LooperComponent {
 }
 
 const main = async() => {
+
+    LooperViewLayer.initView();
     const looper = new LooperComponent();
     await looper.start();
 };
