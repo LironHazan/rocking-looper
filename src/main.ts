@@ -25,10 +25,12 @@ class LooperComponent {
         await navigator.permissions.query({name: 'microphone'});
 
         // Streaming audio:
-        await this.setupAudioLine();
+        const lineInRef = await this.setupAudioLine();
 
         // Recording streamed audio!
         await this.setupRecorder();
+
+        return lineInRef;
     }
 
     private async setupAudioLine() {
@@ -50,6 +52,7 @@ class LooperComponent {
 
         const lineInSource = context.createMediaStreamSource(this.stream);
         lineInSource.connect(context.destination);
+        return lineInSource;
     }
 
     private async setupRecorder() {
@@ -84,8 +87,14 @@ class LooperComponent {
 const main = async() => {
 
     LooperViewLayer.initView();
-    const looper = new LooperComponent();
-    await looper.start();
+    let looper = new LooperComponent();
+    const lineInRef = await looper.start();
+
+    const disconnect: HTMLElement = document.querySelector('.disconnect');
+    disconnect.onclick = () => {
+        lineInRef && lineInRef.disconnect();
+        looper = null;
+    }
 };
 
 main()
