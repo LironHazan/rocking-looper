@@ -1,5 +1,7 @@
 
-interface ObserverType { observers: { name: string, fn: Function}[], on: Function, dispatch: Function }
+interface ObserverType { observers: ActionType[], on: Function, dispatch: Function }
+interface ActionType { name: string, fn: Function}
+
 export enum State {
     start = 'start',
     rec = 'rec',
@@ -16,7 +18,7 @@ export class LooperViewLayer {
     static viewInteractionSubject: ObserverType = {
         observers: [],
 
-        on: (action: { name: string, fn: Function}) => {
+        on: (action: ActionType) => {
             LooperViewLayer.viewInteractionSubject.observers.push(action);
         },
 
