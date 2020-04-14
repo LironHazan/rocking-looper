@@ -1,6 +1,14 @@
 
-interface ObserverType { observers: ActionType[], on: Function, dispatch: Function }
-interface ActionType { name: string, fn: Function}
+interface ObserverType {
+    observers: ActionType[];
+    on: Function;
+    dispatch: Function;
+}
+
+interface ActionType {
+    name: string;
+    fn: Function;
+}
 
 export enum State {
     start = 'start',
@@ -8,7 +16,13 @@ export enum State {
     play = 'play',
     stop = 'stop',
 }
-export interface LooperActionRef { id: number, el: HTMLElement, btnState: State, playable: HTMLAudioElement, blob: Blob }
+export interface LooperActionRef {
+    id: number;
+    el: HTMLElement;
+    btnState: State;
+    playable: HTMLAudioElement;
+    blob: Blob;
+}
 
 export class LooperViewLayer {
     static elements: LooperActionRef[];
@@ -42,7 +56,7 @@ export class LooperViewLayer {
             { id: 3, el: third, btnState: State.start, playable: null, blob: null  }
         ];
 
-        LooperViewLayer.attachClickListeners(LooperViewLayer.elements)
+        LooperViewLayer.attachClickListeners(LooperViewLayer.elements);
     }
 
     static reset(element: LooperActionRef) {
@@ -62,10 +76,10 @@ export class LooperViewLayer {
                 LooperViewLayer.reset(element);
             };
         }
-    };
+    }
 
     static setupTrackState(element: LooperActionRef) {
-        switch(element.btnState) {
+        switch (element.btnState) {
 
             case State.start:
                 element.btnState = State.rec;
@@ -111,6 +125,6 @@ export class LooperViewLayer {
 
             default:
         }
-    };
+    }
 
 }

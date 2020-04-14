@@ -1,4 +1,5 @@
-import {LooperActionRef, LooperViewLayer} from "./looper-view";
+import 'regenerator-runtime/runtime';
+import {LooperActionRef, LooperViewLayer} from './looper-view';
 
 class LooperComponent {
 
@@ -84,7 +85,7 @@ class LooperComponent {
     }
 }
 
-const main = async() => {
+async function main() {
 
     LooperViewLayer.initView();
     let looper = new LooperComponent();
@@ -94,8 +95,8 @@ const main = async() => {
     disconnect.onclick = () => {
         lineInRef && lineInRef.disconnect();
         looper = null;
-    }
-};
+    };
+}
 
 main()
     .then(() => console.log('started'));

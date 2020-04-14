@@ -1,37 +1,34 @@
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Rocking Looper</title>
-  <link rel="stylesheet" href="./styles/style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Rocking Looper</title>
+    <link rel="stylesheet" href="./styles/style.css" />
+  </head>
 
-</head>
-
-<body>
-<div class="looper">
-<!--&lt;!&ndash;  <img src="./assets/looper.png" alt="">&ndash;&gt;-->
-
-
-    <div class="looper-channels">
+  <body>
+    <div class="looper">
+      <rocking-btn></rocking-btn>
+      <div class="looper-channels">
         <div class="action-btn-wrapper">
-            <div class="action-btn first">
-                <div class="state-text"> start </div>
-            </div>
+          <div class="action-btn first">
+            <div class="state-text">start</div>
+          </div>
         </div>
         <div class="action-btn-wrapper">
-            <div class="action-btn second">
-                <div class="state-text"> start </div>
-            </div>
+          <div class="action-btn second">
+            <div class="state-text">start</div>
+          </div>
         </div>
         <div class="action-btn-wrapper">
-            <div class="action-btn third">
-                <div class="state-text"> start </div>
-            </div>
+          <div class="action-btn third">
+            <div class="state-text">start</div>
+          </div>
         </div>
+      </div>
+      <div class="disconnect">Disconnect Context</div>
     </div>
-    <div class="disconnect"> Disconnect Context </div>
-</div>
 
-<script src="/main.bundle.js"></script>
-</body>
-
+    <script src="main.ts"></script>
+    <script src="./elements/looper-btn.ts"></script>
+  </body>
 </html>
